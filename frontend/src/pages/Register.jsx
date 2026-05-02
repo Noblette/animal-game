@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../index.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import Swal from "sweetalert2";
 
 
 function Register() {
@@ -40,14 +41,38 @@ function Register() {
         }
 }
 
-  const response = await fetch("http://127.0.0.1:5000/register", {
+try{  
+const response = await fetch("http://127.0.0.1:5000/register", {
       method: "POST",
       body: data, // Note : Ne pas ajouter 'Content-Type': 'application/json' ici, FormData le gère
     });
     
   const result = await response.json();
     alert(result.message);
-  };
+ 
+  if (response.ok) {
+      Swal.fire({
+        icon: "success",
+        title: "Succès 🎉",
+        text: result.message,
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Erreur",
+        text: result.message,
+      });
+    }
+
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Erreur réseau",
+      text: "Impossible de contacter le serveur",
+    });
+     };
+  }
+
 
 
 

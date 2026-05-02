@@ -4,6 +4,9 @@ import mysql.connector
 import bcrypt
 import uuid;
 
+
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -49,6 +52,11 @@ def register():
     date_naissance = request.form.get("date_naissance")
 
     file = request.files.get("photo")
+
+    allowed_genres = ["male", "female", "other"]
+
+    if genre not in allowed_genres:
+        return jsonify({"message": "Invalid genre"}), 400
 
     # 📸 Gestion image
     photo_path = None
