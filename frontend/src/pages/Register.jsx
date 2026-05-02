@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../index.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import uuid;
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ function Register() {
     photo: null,
     date_naissance: ""
   });
+  filename = str(uuid.uuid4()) + "_" + file.filename
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -33,8 +35,10 @@ function Register() {
     // Utilisation de FormData pour inclure le fichier dans la requête
   const data = new FormData();
     for (let key in formData) {
-      data.append(key, formData[key]);
-    }
+        if (formData[key] !== null) {
+            data.append(key, formData[key]);
+        }
+}
 
   const response = await fetch("http://127.0.0.1:5000/register", {
       method: "POST",
