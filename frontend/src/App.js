@@ -9,8 +9,11 @@ function App() {
           Animal Game <span aria-hidden>🎮</span>
         </h1>
         <p className="mt-4 text-gray-600 text-base sm:text-lg">
+          <button>Click me</button>
           Prêt à jouer ?
+        
         </p>
+          <button>Click me</button>
       </div>
     </div>
   );
