@@ -20,5 +20,40 @@ def login():
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    data = request.json
+
+    email = data.get("email")
+    password = data.get("password")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+
+    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    cursor = db.cursor()
+
+    query = """
+    INSERT INTO users 
+    (email, password, first_name, last_name)
+    VALUES (%s, %s, %s, %s)
+    """
+
+    cursor.execute(query, (
+        email,
+        hashed.decode('utf-8'),
+        first_name,
+        last_name
+    ))
+
+    db.commit()
+
+    return jsonify({"message": "User registered"})
+
+
+    
+
 if __name__ == "__main__":
     app.run(debug=True)
