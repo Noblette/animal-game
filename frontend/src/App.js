@@ -1,7 +1,7 @@
-
+import Login from "./pages/Login";
 
 function App() {
-  return "attend"
+  return <Login />;
 }
 
 export default App;
