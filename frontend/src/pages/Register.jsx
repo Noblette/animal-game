@@ -52,7 +52,7 @@ function Register() {
         <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="photo" type="text" placeholder="URL Photo" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="date_naissance" type="date" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200">
+        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition duration-200">
           Register
         </button>
       </form>
