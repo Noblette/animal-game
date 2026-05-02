@@ -19,25 +19,33 @@ function Register() {
 
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
+    // Si c'est un fichier, on prend le premier fichier sélectionné
     setFormData(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: files ? files[0] : value 
     }));
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://127.0.0.1:5000/register", {
+    
+    // Utilisation de FormData pour inclure le fichier dans la requête
+  const data = new FormData();
+    for (let key in formData) {
+      data.append(key, formData[key]);
+    }
+
+  const response = await fetch("http://127.0.0.1:5000/register", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
+      body: data, // Note : Ne pas ajouter 'Content-Type': 'application/json' ici, FormData le gère
     });
-    const data = await response.json();
-    alert(data.message);
+    
+  const result = await response.json();
+    alert(result.message);
   };
+
+
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
@@ -60,7 +68,7 @@ function Register() {
           <option value="Femme">Femme</option>
         </select>
         <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <input name="photo" type="text" placeholder="URL Photo" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="date_naissance" type="date" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition duration-200">
           Register
