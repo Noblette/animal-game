@@ -15,12 +15,14 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    if email == "test@test.com" and password == "1234":
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+    user = cursor.fetchone()
+
+    if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"message": "Invalid credentials"}), 401
-
-
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -53,7 +55,7 @@ def register():
     return jsonify({"message": "User registered"})
 
 
-    
+
 
 if __name__ == "__main__":
     app.run(debug=True)
