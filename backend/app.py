@@ -1,8 +1,18 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import mysql.connector
+import bcrypt
 
 app = Flask(__name__)
 CORS(app)
+
+db = mysql.connector.connect(
+    host="localhost",
+    user="gamer",
+    password="tsyHaiko#123",
+    database="game"
+)
+
 
 @app.route("/")
 def home():
