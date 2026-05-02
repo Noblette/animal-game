@@ -79,8 +79,8 @@ function Register() {
          <input name="phone" type="text" placeholder="Téléphone" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <select name="genre" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded">
           <option value="">Sélectionnez le genre</option>
-          <option value="Homme">Homme</option>
-          <option value="Femme">Femme</option>
+          <option value="male">Homme</option>
+          <option value="female">Femme</option>
         </select>
         <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
