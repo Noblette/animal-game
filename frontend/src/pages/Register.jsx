@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../index.css";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -10,9 +11,12 @@ function Register() {
     phone: "",
     genre: "",
     adresse: "",
-    photo: "",
+    photo: null,
     date_naissance: ""
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,11 +43,17 @@ function Register() {
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Inscription</h2>
       <form onSubmit={handleRegister} className="space-y-4">
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
-        <input name="password" type="password" placeholder="Mot de passe" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
-        <input name="first_name" type="text" placeholder="Prénom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="last_name" type="text" placeholder="Nom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <input name="phone" type="text" placeholder="Téléphone" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <input name="first_name" type="text" placeholder="Prénom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <input name="email" type="email" placeholder="Email" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+        <button 
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-2 top-2 text-gray-500 hover:text-gray-700"
+          >
+            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+          </button>
+         <input name="phone" type="text" placeholder="Téléphone" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <select name="genre" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded">
           <option value="">Sélectionnez le genre</option>
           <option value="Homme">Homme</option>
