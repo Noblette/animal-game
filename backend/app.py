@@ -36,34 +36,50 @@ def login():
 
 @app.route("/register", methods=["POST"])
 def register():
-    data = request.json
+    email = request.form.get("email")
+    password = request.form.get("password")
+    first_name = request.form.get("first_name")
+    last_name = request.form.get("last_name")
+    phone = request.form.get("phone")
+    genre = request.form.get("genre")
+    adresse = request.form.get("adresse")
+    date_naissance = request.form.get("date_naissance")
 
-    email = data.get("email")
-    password = data.get("password")
-    first_name = data.get("first_name")
-    last_name = data.get("last_name")
+    file = request.files.get("photo")
 
+    # 📸 Gestion image
+    photo_path = None
+    if file:
+        filename = file.filename
+        file.save("uploads/" + filename)
+        photo_path = "uploads/" + filename
+
+    # 🔐 Hash password
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     cursor = db.cursor()
 
     query = """
     INSERT INTO users 
-    (email, password, first_name, last_name)
-    VALUES (%s, %s, %s, %s)
+    (email, password, first_name, last_name, phone, genre, adresse, photo, date_naissance)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     cursor.execute(query, (
         email,
         hashed.decode('utf-8'),
         first_name,
-        last_name
+        last_name,
+        phone,
+        genre,
+        adresse,
+        photo_path,
+        date_naissance
     ))
 
     db.commit()
 
-    return jsonify({"message": "User registered"})
-
+    return jsonify({"message": "User registered successfully"})
 
 
 
