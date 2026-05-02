@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
+import uuid;
 
 app = Flask(__name__)
 CORS(app)
@@ -33,6 +34,8 @@ def login():
         return jsonify({"message": "Login successful"})
     else:
         return jsonify({"message": "Invalid credentials"}), 401
+    # const id = uuidv4();
+    # console.log(id);
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -50,7 +53,11 @@ def register():
     # 📸 Gestion image
     photo_path = None
     if file:
-        filename = file.filename
+        """ filename = file.filename
+        file.save("uploads/" + filename) """
+        
+
+        filename = str(uuid.uuid4()) + "_" + file.filename
         file.save("uploads/" + filename)
         photo_path = "uploads/" + filename
 

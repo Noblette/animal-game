@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../index.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import uuid;
+
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ function Register() {
     photo: null,
     date_naissance: ""
   });
-  filename = str(uuid.uuid4()) + "_" + file.filename
+  
 
   const [showPassword, setShowPassword] = useState(false);
 
