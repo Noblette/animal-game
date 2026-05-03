@@ -108,7 +108,13 @@ const response = await fetch("http://127.0.0.1:5000/register", {
           <option value="female">Femme</option>
         </select>
         <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <div className="flex items-center gap-3">
+           <span className="text-sm text-gray-700 whitespace-nowrap">Entrez votre photo</span>
+           <label className="flex-1 p-2 border border-gray-300 rounded cursor-pointer text-center text-gray-700 hover:bg-gray-50">
+    Choisir une photo
+           <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+           </label>
+        </div>
         <input name="date_naissance" type="date" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <div className="flex gap-3">
         <button type="reset" className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition duration-200">
