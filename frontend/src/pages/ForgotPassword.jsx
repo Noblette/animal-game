@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 function ForgotPassword() {
   return (
     <div>
@@ -7,3 +8,4 @@ function ForgotPassword() {
     </div>
   );
 }
+export default ForgotPassword;
