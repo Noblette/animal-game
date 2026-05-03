@@ -78,7 +78,7 @@ const response = await fetch("http://127.0.0.1:5000/register", {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Inscription</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">Sign up</h2>
       <form onSubmit={handleRegister} className="space-y-4">
         <input name="last_name" type="text" placeholder="Nom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="first_name" type="text" placeholder="Prénom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
