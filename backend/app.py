@@ -95,7 +95,27 @@ def register():
     db.commit()
 
     return jsonify({"message": "User registered successfully"})
+
+
+
+@app.route("/user/<int:user_id>", methods=["GET"])
+def get_user(user_id):
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
+    user = cursor.fetchone()
+
+    if user:
+        return jsonify(user)
+    else:
+        return jsonify({"message": "User not found"}), 404
     
+
+from flask import send_from_directory
+
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    return send_from_directory('uploads', filename)
 
 
 
