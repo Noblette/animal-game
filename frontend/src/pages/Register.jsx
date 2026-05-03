@@ -110,9 +110,14 @@ const response = await fetch("http://127.0.0.1:5000/register", {
         <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
         <input name="date_naissance" type="date" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <div className="flex gap-3">
+        <button type="reset" className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition duration-200">
+          Cancel
+        </button>
         <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition duration-200">
           Register
         </button>
+        </div>
       </form>
     </div>
   );
