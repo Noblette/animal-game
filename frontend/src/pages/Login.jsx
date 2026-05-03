@@ -16,7 +16,17 @@ function Login() {
     });
 
     const data = await response.json();
-    alert(data.message);
+    if (response.ok) {
+      localStorage.setItem("user_id", result.user_id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Bienvenue 🎉",
+        text: "Connexion réussie",
+      });
+
+      window.location.href = "/profile";
+}
   };
 
   return (
@@ -47,6 +57,25 @@ function Login() {
           >
             Login
           </button>
+
+          <p className="text-sm text-gray-600 mt-4 text-center">
+            Pas encore de compte ?{" "}
+            <span 
+              className="text-blue-600 cursor-pointer"
+              onClick={() => window.location.href = "/register"}
+            >
+              S'inscrire
+            </span>
+          </p>
+
+          <p className="text-sm text-gray-600 mt-2 text-center">
+            <span 
+              className="text-red-500 cursor-pointer"
+              onClick={() => window.location.href = "/forgot-password"}
+            >
+              Mot de passe oublié ?
+            </span>
+          </p>
         </form>
       </div>
     </div>

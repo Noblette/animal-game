@@ -34,7 +34,10 @@ def login():
     user = cursor.fetchone()
 
     if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
-        return jsonify({"message": "Login successful"})
+        return jsonify({
+            "message": "Login successful",
+            "user_id": user["id"]
+})
     else:
         return jsonify({"message": "Invalid credentials"}), 401
     # const id = uuidv4();

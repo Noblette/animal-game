@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 
 function Profile() {
   const [user, setUser] = useState(null);
+  const userId = localStorage.getItem("user_id");
+
+
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/user/1") // test avec ID 1
+    fetch(`http://127.0.0.1:5000/user/${userId}`)
       .then(res => res.json())
       .then(data => setUser(data));
   }, []);
@@ -21,6 +24,15 @@ function Profile() {
         alt="profil" 
         width="150"
       />
+      <button
+        onClick={() => {
+          localStorage.removeItem("user_id");
+          window.location.href = "/";
+        }}
+        className="bg-red-500 text-white px-4 py-2 rounded mt-4"
+      >
+        Logout
+      </button>
     </div>
   );
 }
