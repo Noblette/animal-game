@@ -95,6 +95,8 @@ def register():
     db.commit()
 
     return jsonify({"message": "User registered successfully"})
+    
+
 
 
 
