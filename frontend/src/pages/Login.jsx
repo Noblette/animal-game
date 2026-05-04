@@ -18,7 +18,7 @@ function Login() {
 
     const data = await response.json();
     if (response.ok) {
-      localStorage.setItem("user_id", result.user_id);
+      localStorage.setItem("user_id", data.user_id);
 
       Swal.fire({
         icon: "success",
