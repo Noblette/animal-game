@@ -139,6 +139,9 @@ app.config['MAIL_DEFAULT_SENDER'] = 'noblette.tsimihanta@gmail.com'
 
 mail = Mail(app)
 
+# Stockage temporaire des OTP (en mémoire)
+otp_storage = {}   # {email: {"code": "123456", "expiry": datetime}}
+
 # ==================== ROUTE MOT DE PASSE OUBLIÉ ====================
 @app.route("/forgot-password", methods=["POST"])
 def forgot_password():
@@ -148,55 +151,76 @@ def forgot_password():
     if not email:
         return jsonify({"message": "Email requis"}), 400
 
+    # Vérifier si l'email existe
     cursor = db.cursor(dictionary=True)
     cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
     user = cursor.fetchone()
 
     if not user:
-        # On renvoie toujours le même message pour des raisons de sécurité
-        return jsonify({"message": "Si cet email existe, un lien de réinitialisation a été envoyé."})
+        return jsonify({"message": "Si cet email existe, un code vous a été envoyé."})
 
-    # Générer un token
-    reset_token = str(uuid.uuid4())
-    expiry = datetime.now() + timedelta(hours=1)  # Valable 1 heure
+    # Générer un code à 6 chiffres
+    code = str(random.randint(100000, 999999))
+    expiry = datetime.now() + timedelta(minutes=10)
 
-    # Sauvegarder le token dans la base
-    cursor.execute("""
-        UPDATE users 
-        SET reset_token = %s, reset_token_expiry = %s 
-        WHERE email = %s
-    """, (reset_token, expiry, email))
-    db.commit()
-
-    # Lien de réinitialisation
-    reset_link = f"http://localhost:3002/reset-password/{reset_token}"
+    otp_storage[email] = {"code": code, "expiry": expiry}
 
     # Envoi de l'email
     try:
         msg = Message(
-            subject="Réinitialisation de votre mot de passe",
+            subject="Code de réinitialisation de mot de passe",
             recipients=[email],
             body=f"""
             Bonjour,
 
-            Vous avez demandé une réinitialisation de mot de passe.
-            Cliquez sur ce lien pour réinitialiser votre mot de passe :
+            Voici votre code de réinitialisation : {code}
 
-            {reset_link}
+            Ce code est valable pendant 10 minutes.
 
-            Ce lien expire dans 1 heure.
-
-            Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
+            Si vous n'avez pas demandé ce code, ignorez cet email.
             """
         )
         mail.send(msg)
 
-        return jsonify({"message": "Un email de réinitialisation a été envoyé."})
+        return jsonify({"message": "Un code de vérification a été envoyé à votre email."})
     except Exception as e:
-        print(e)
-        return jsonify({"message": "Erreur lors de l'envoi de l'email"}), 500
+        print("Erreur email:", e)
+        return jsonify({"message": "Erreur lors de l'envoi du code"}), 500
 
 
+@app.route("/reset-password", methods=["POST"])
+def reset_password():
+    data = request.json
+    email = data.get("email")
+    code = data.get("code")
+    new_password = data.get("new_password")
+
+    if not email or not code or not new_password:
+        return jsonify({"message": "Données manquantes"}), 400
+
+    # Vérifier l'OTP
+    if email not in otp_storage:
+        return jsonify({"message": "Code invalide ou expiré"}), 400
+
+    stored = otp_storage[email]
+    if datetime.now() > stored["expiry"]:
+        del otp_storage[email]
+        return jsonify({"message": "Code expiré"}), 400
+
+    if stored["code"] != code:
+        return jsonify({"message": "Code incorrect"}), 400
+
+    # Tout est bon → mise à jour du mot de passe
+    hashed = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+
+    cursor = db.cursor()
+    cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed.decode('utf-8'), email))
+    db.commit()
+
+    # Supprimer l'OTP
+    del otp_storage[email]
+
+    return jsonify({"message": "Mot de passe modifié avec succès"})
 
 
 if __name__ == "__main__":
