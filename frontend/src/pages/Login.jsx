@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 function Login() {
   console.log("Login component rendered");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -46,12 +48,21 @@ function Login() {
             className="w-full p-3 border rounded-lg"
           />
 
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border rounded-lg"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Mot de passe"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg pr-12 focus:outline-none focus:border-green-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <FiEyeOff size={22} /> : <FiEye size={22} />}
+            </button>
+          </div>
 
           <button
             type="submit"
