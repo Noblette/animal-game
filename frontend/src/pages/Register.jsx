@@ -80,9 +80,9 @@ const response = await fetch("http://127.0.0.1:5000/register", {
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Sign up</h2>
       <form onSubmit={handleRegister} className="space-y-4">
-        <input name="last_name" type="text" placeholder="Nom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <input name="first_name" type="text" placeholder="Prénom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" required />
+        <input name="last_name" type="text" placeholder="Nom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"  />
+        <input name="first_name" type="text" placeholder="Prénom" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" />
+        <input name="email" type="email" placeholder="Email" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" required autoComplete="new-password"/>
         {/* Champ mot de passe regroupé avec son bouton de bascule */}
         <div className="relative">
         <input 
@@ -90,8 +90,9 @@ const response = await fetch("http://127.0.0.1:5000/register", {
             type={showPassword ? "text" : "password"} 
             placeholder="Mot de passe" 
             onChange={handleChange} 
-            className="w-full p-2 border border-gray-300 rounded pr-10" 
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" 
             required 
+            autoComplete="new-password"
         />
         <button 
             type="button"
@@ -101,21 +102,21 @@ const response = await fetch("http://127.0.0.1:5000/register", {
             {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
         </button>
         </div>
-         <input name="phone" type="text" placeholder="Téléphone" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
-        <select name="genre" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded">
+         <input name="phone" type="text" placeholder="Téléphone" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" />
+        <select name="genre" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500">
           <option value="">Sélectionnez le genre</option>
           <option value="male">Homme</option>
           <option value="female">Femme</option>
         </select>
-        <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <input name="adresse" type="text" placeholder="Adresse" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" />
         <div className="flex items-center gap-3">
            <span className="text-sm text-gray-700 whitespace-nowrap">Entrez votre photo</span>
            <label className="flex-1 p-2 border border-gray-300 rounded cursor-pointer text-center text-gray-700 hover:bg-gray-50">
     Choisir une photo
-           <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+           <input name="photo" type="file" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" />
            </label>
         </div>
-        <input name="date_naissance" type="date" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded" />
+        <input name="date_naissance" type="date" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500" />
         <div className="flex gap-3">
         <button type="reset" className="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition duration-200">
           Cancel
