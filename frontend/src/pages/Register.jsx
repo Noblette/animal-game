@@ -124,6 +124,15 @@ const response = await fetch("http://127.0.0.1:5000/register", {
           Register
         </button>
         </div>
+        <p className="text-sm text-gray-600 mt-4 text-center">
+            Déjà un  compte créé ?{" "}
+            <span 
+              className="text-blue-600 cursor-pointer"
+              onClick={() => window.location.href = "/"}
+            >
+              Se connecter
+            </span>
+          </p>
       </form>
     </div>
   );
