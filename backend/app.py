@@ -3,6 +3,12 @@ from flask_cors import CORS
 import mysql.connector
 import bcrypt
 import uuid;
+from flask_mail import Mail, Message
+import uuid
+from datetime import datetime, timedelta
+import random
+
+
 
 
 
@@ -119,6 +125,76 @@ from flask import send_from_directory
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
+
+
+
+
+# Configuration Mail (à mettre après app = Flask(__name__))
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'noblette.tsimihanta@gmail.com'          # Ton email
+app.config['MAIL_PASSWORD'] = 'knex wyzt tlor zmwk' # ← Très important
+app.config['MAIL_DEFAULT_SENDER'] = 'noblette.tsimihanta@gmail.com'
+
+mail = Mail(app)
+
+# ==================== ROUTE MOT DE PASSE OUBLIÉ ====================
+@app.route("/forgot-password", methods=["POST"])
+def forgot_password():
+    data = request.json
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"message": "Email requis"}), 400
+
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+    user = cursor.fetchone()
+
+    if not user:
+        # On renvoie toujours le même message pour des raisons de sécurité
+        return jsonify({"message": "Si cet email existe, un lien de réinitialisation a été envoyé."})
+
+    # Générer un token
+    reset_token = str(uuid.uuid4())
+    expiry = datetime.now() + timedelta(hours=1)  # Valable 1 heure
+
+    # Sauvegarder le token dans la base
+    cursor.execute("""
+        UPDATE users 
+        SET reset_token = %s, reset_token_expiry = %s 
+        WHERE email = %s
+    """, (reset_token, expiry, email))
+    db.commit()
+
+    # Lien de réinitialisation
+    reset_link = f"http://localhost:3002/reset-password/{reset_token}"
+
+    # Envoi de l'email
+    try:
+        msg = Message(
+            subject="Réinitialisation de votre mot de passe",
+            recipients=[email],
+            body=f"""
+            Bonjour,
+
+            Vous avez demandé une réinitialisation de mot de passe.
+            Cliquez sur ce lien pour réinitialiser votre mot de passe :
+
+            {reset_link}
+
+            Ce lien expire dans 1 heure.
+
+            Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
+            """
+        )
+        mail.send(msg)
+
+        return jsonify({"message": "Un email de réinitialisation a été envoyé."})
+    except Exception as e:
+        print(e)
+        return jsonify({"message": "Erreur lors de l'envoi de l'email"}), 500
 
 
 
