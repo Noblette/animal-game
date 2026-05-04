@@ -9,13 +9,11 @@ function Profile() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        if (!userId) {
-          setUser(null);
-          return;
-        }
+        if (!userId) return setUser(null);
+        
         const res = await fetch(`http://127.0.0.1:5000/user/${userId}`);
         const data = await res.json();
-        if (!res.ok) throw new Error(data?.message || "Erreur");
+        if (!res.ok) throw new Error();
         setUser(data);
       } catch (err) {
         console.error(err);
@@ -40,90 +38,77 @@ function Profile() {
 
     if (result.isConfirmed) {
       localStorage.removeItem("user_id");
-      await Swal.fire({
-        title: "À bientôt 👋",
-        text: "Vous êtes déconnecté.",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      await Swal.fire({ title: "À bientôt 👋", icon: "success", timer: 1500, showConfirmButton: false });
       window.location.href = "/";
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-white">
-        <div className="text-center">
-          <p className="text-gray-700 font-medium">Chargement...</p>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-white">Chargement...</div>;
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-white p-6">
-        {/* Ton message d'erreur actuel */}
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-white p-6">Profil introuvable</div>;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow-xl rounded-3xl overflow-hidden border border-purple-100">
-          {/* En-tête */}
-          <div className="p-6 sm:p-10 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-indigo-50 to-purple-50">
-            <div className="relative flex-shrink-0">
+      {/* Conteneur plus large */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        
+        <div className="bg-white shadow-2xl rounded-3xl overflow-hidden border border-purple-100">
+          
+          {/* En-tête plus grand */}
+          <div className="p-8 lg:p-12 flex flex-col lg:flex-row items-center gap-8 bg-gradient-to-r from-indigo-50 to-purple-50">
+            <div className="relative">
               <img
                 src={`http://127.0.0.1:5000/${user.photo}`}
                 alt="profil"
-                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-white shadow-md"
+                className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-4 border-white shadow-lg"
               />
             </div>
 
-            <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
                 {user.first_name} {user.last_name}
               </h1>
-              <p className="text-gray-600 mt-2 text-lg">{user.email}</p>
+              <p className="text-xl text-gray-600 mt-3">{user.email}</p>
 
-              <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-3">
-                <span className="px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium">
+              <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-4">
+                <span className="px-5 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium">
                   Compte client
                 </span>
-                <span className="px-4 py-1.5 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+                <span className="px-5 py-2 rounded-full bg-purple-100 text-purple-700 font-medium">
                   ID: {userId}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Informations */}
-          <div className="p-6 sm:p-10">
-            <h3 className="font-semibold text-xl text-gray-800 mb-6">Informations personnelles</h3>
+          {/* Section Informations */}
+          <div className="p-8 lg:p-12">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-8">Informations personnelles</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 rounded-2xl p-5">
+              <div className="bg-gray-50 rounded-2xl p-6">
                 <p className="text-sm text-gray-500">Prénom</p>
-                <p className="font-semibold text-lg mt-1">{user.first_name}</p>
+                <p className="text-2xl font-semibold mt-2">{user.first_name}</p>
               </div>
-              <div className="bg-gray-50 rounded-2xl p-5">
+              <div className="bg-gray-50 rounded-2xl p-6">
                 <p className="text-sm text-gray-500">Nom</p>
-                <p className="font-semibold text-lg mt-1">{user.last_name}</p>
+                <p className="text-2xl font-semibold mt-2">{user.last_name}</p>
               </div>
-              <div className="md:col-span-2 bg-gray-50 rounded-2xl p-5">
+              <div className="md:col-span-2 bg-gray-50 rounded-2xl p-6">
                 <p className="text-sm text-gray-500">Email</p>
-                <p className="font-semibold text-lg mt-1">{user.email}</p>
+                <p className="text-2xl font-semibold mt-2">{user.email}</p>
               </div>
             </div>
 
-            {/* Bouton Logout */}
-            <div className="mt-10 flex justify-center sm:justify-end">
+            {/* Logout */}
+            <div className="mt-12 flex justify-center lg:justify-end">
               <button
                 onClick={handleLogout}
-                className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-8 py-3.5 rounded-2xl font-semibold transition shadow-md"
+                className="w-full lg:w-auto bg-red-500 hover:bg-red-600 text-white px-10 py-4 rounded-2xl font-semibold text-lg transition shadow-lg"
               >
                 Se déconnecter
               </button>
@@ -131,7 +116,7 @@ function Profile() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-gray-500 mt-8">
           Bienvenue sur votre espace profil.
         </p>
       </div>
