@@ -45,7 +45,7 @@ function Login() {
             type="email"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
           />
 
           <div className="relative">
