@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 function Login() {
+  console.log("Login component rendered");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
