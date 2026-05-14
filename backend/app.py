@@ -36,23 +36,29 @@ def login():
     password = data.get("password")
 
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+
+    cursor.execute("""
+        SELECT * FROM users
+        WHERE email=%s
+        AND deleted_at IS NULL
+    """, (email,))
+
     user = cursor.fetchone()
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
-        if user["is_deleted"]:
-            return jsonify({"message": "Compte supprimé"}), 403
-
+    if user and bcrypt.checkpw(
+        password.encode("utf-8"),
+        user["password"].encode("utf-8")
+    ):
         return jsonify({
             "message": "Login successful",
             "user_id": user["id"],
-            "role": user["role"]
+            "role": user["role"]   # IMPORTANT
         })
 
-    else:
-        return jsonify({"message": "Invalid credentials"}), 401
-    # const id = uuidv4();
-    # console.log(id);
+    return jsonify({
+        "message": "Invalid credentials"
+    }), 401
+
 
 @app.route("/register", methods=["POST"])
 def register():
