@@ -32,7 +32,9 @@ function Login() {
 
       if (data.role === "admin") {
           window.location.href = "/admin";
-        } else {
+        } 
+            
+      else {
           window.location.href = "/profile";
         }
         }

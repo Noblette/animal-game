@@ -5,6 +5,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("user_id");
+  const role = localStorage.getItem("role");
 
   useEffect(() => {
     const loadUser = async () => {
@@ -38,6 +39,7 @@ function Profile() {
 
     if (result.isConfirmed) {
       localStorage.removeItem("user_id");
+      localStorage.removeItem("role");
       await Swal.fire({ title: "À bientôt 👋", icon: "success", timer: 1500, showConfirmButton: false });
       window.location.href = "/";
     }
@@ -75,9 +77,18 @@ function Profile() {
               <p className="text-xl text-gray-600 mt-3">{user.email}</p>
 
               <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-4">
-                <span className="px-5 py-2 rounded-full bg-indigo-100 text-indigo-700 font-medium">
-                  Compte client
+                <span
+                  className={`px-5 py-2 rounded-full font-medium ${
+                    role === "admin"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-indigo-100 text-indigo-700"
+                  }`}
+                >
+                  {role === "admin"
+                    ? "Administrateur 👑"
+                    : "Utilisateur 🎮"}
                 </span>
+
                 <span className="px-5 py-2 rounded-full bg-purple-100 text-purple-700 font-medium">
                   ID: {userId}
                 </span>
@@ -112,6 +123,17 @@ function Profile() {
               >
                 Se déconnecter
               </button>
+              {
+                role === "admin" && (
+                  <button
+                    onClick={() => window.location.href="/admin"}
+                    className="bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700"
+                  >
+                    Dashboard Admin
+                  </button>
+                )
+              }
+
             </div>
           </div>
         </div>
