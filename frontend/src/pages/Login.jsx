@@ -22,6 +22,7 @@ function Login() {
     const data = await response.json();
     if (response.ok) {
       localStorage.setItem("user_id", data.user_id);
+      localStorage.setItem("role", data.role);
 
       Swal.fire({
         icon: "success",
@@ -29,8 +30,12 @@ function Login() {
         text: "Connexion réussie",
       });
 
-      window.location.href = "/profile";
-}
+      if (data.role === "admin") {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/profile";
+        }
+        }
   };
 
   return (

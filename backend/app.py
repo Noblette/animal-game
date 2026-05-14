@@ -40,10 +40,15 @@ def login():
     user = cursor.fetchone()
 
     if user and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
+        if user["is_deleted"]:
+            return jsonify({"message": "Compte supprimé"}), 403
+
         return jsonify({
             "message": "Login successful",
-            "user_id": user["id"]
-})
+            "user_id": user["id"],
+            "role": user["role"]
+        })
+
     else:
         return jsonify({"message": "Invalid credentials"}), 401
     # const id = uuidv4();
