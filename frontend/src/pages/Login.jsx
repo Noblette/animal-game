@@ -30,14 +30,14 @@ function Login() {
         text: "Connexion réussie",
       });
 
-      if (data.role === "admin") {
-          window.location.href = "/admin";
-        } 
-            
-      else {
-          window.location.href = "/profile";
-        }
-        }
+      window.location.href = "/profile";
+        } else {
+    Swal.fire({
+      icon: "error",
+      title: "Erreur",
+      text: data.message || "Email ou mot de passe incorrect",
+    });
+  }
   };
 
   return (
