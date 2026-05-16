@@ -89,14 +89,21 @@ def create_users_table():
 
 
 #################
+# =========================
+# CREATE DEFAULT ADMIN
+# =========================
 def create_default_admin():
+
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
+    admin_email = "noblette.tsimihanta@gmail.com"
+
     cursor.execute("""
-        SELECT * FROM users
-        WHERE email=%s
-    """, ("noblette.tsimihanta@gmail.com",))
+        SELECT id
+        FROM users
+        WHERE email = %s
+    """, (admin_email,))
 
     admin = cursor.fetchone()
 
@@ -120,7 +127,10 @@ def create_default_admin():
                 date_naissance,
                 role
             )
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (
+                %s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s
+            )
         """, (
             "noblette.tsimihanta@gmail.com",
             hashed_password,
@@ -129,7 +139,7 @@ def create_default_admin():
             "0349954043",
             "female",
             "Isada Fianarantsoa",
-            "uploads/default.jpg",
+            "uploads/default.png",
             "2004-05-31",
             "admin"
         ))
@@ -137,6 +147,9 @@ def create_default_admin():
         db.commit()
 
         print("✅ Admin par défaut créé")
+
+    else:
+        print("ℹ️ Admin déjà existant")
 
     cursor.close()
     db.close()
