@@ -40,7 +40,7 @@ def login():
     cursor.execute("""
         SELECT * FROM users
         WHERE email=%s
-        AND deleted_at IS NULL
+        AND is_deleted = 0
     """, (email,))
 
     user = cursor.fetchone()
