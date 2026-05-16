@@ -33,6 +33,61 @@ def home():
     return "Backend is running"
 
 
+########################
+# =========================
+# CREATE TABLE USERS
+# =========================
+def create_users_table():
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+
+            email VARCHAR(100) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL,
+
+            first_name VARCHAR(100),
+            last_name VARCHAR(100),
+            phone VARCHAR(20),
+
+            genre ENUM(
+                'male',
+                'female',
+                'other'
+            ),
+
+            adresse TEXT,
+
+            photo VARCHAR(255),
+
+            date_naissance DATE,
+
+            created_at TIMESTAMP
+            DEFAULT CURRENT_TIMESTAMP,
+
+            role ENUM(
+                'user',
+                'admin'
+            )
+            DEFAULT 'user',
+
+            is_deleted BOOLEAN
+            DEFAULT FALSE
+        )
+    """)
+
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+    print("✅ Table users vérifiée/créée")
+#######################
+
+
 #################
 def create_default_admin():
     db = get_db()
