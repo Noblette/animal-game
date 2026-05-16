@@ -33,6 +33,61 @@ def home():
     return "Backend is running"
 
 
+#################
+def create_default_admin():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT * FROM users
+        WHERE email=%s
+    """, ("noblette.tsimihanta@gmail.com",))
+
+    admin = cursor.fetchone()
+
+    if not admin:
+
+        hashed_password = bcrypt.hashpw(
+            "tsyHaiko123@".encode("utf-8"),
+            bcrypt.gensalt()
+        ).decode("utf-8")
+
+        cursor.execute("""
+            INSERT INTO users (
+                email,
+                password,
+                first_name,
+                last_name,
+                phone,
+                genre,
+                adresse,
+                photo,
+                date_naissance,
+                role
+            )
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            "noblette.tsimihanta@gmail.com",
+            hashed_password,
+            "Fenotoky",
+            "Noblette",
+            "0349954043",
+            "female",
+            "Isada Fianarantsoa",
+            "uploads/default.jpg",
+            "2004-05-31",
+            "admin"
+        ))
+
+        db.commit()
+
+        print("✅ Admin par défaut créé")
+
+    cursor.close()
+    db.close()
+##################""
+
+
 # =========================
 # LOGIN
 # =========================
@@ -356,5 +411,7 @@ def verify_otp():
 # =========================
 # RUN APP
 # =========================
+
 if __name__ == "__main__":
+    create_default_admin()
     app.run(debug=True)
