@@ -1,21 +1,18 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
-import uuid;
-from flask_mail import Mail, Message
 import uuid
+from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 import random
-
-
-
-
-
 
 app = Flask(__name__)
 CORS(app)
 
+# =========================
+# CONNEXION BASE DE DONNÉES
+# =========================
 db = mysql.connector.connect(
     host="localhost",
     user="gamer",
@@ -23,6 +20,14 @@ db = mysql.connector.connect(
     database="game"
 )
 
+# Fonction pour reconnecter si besoin
+def get_db():
+    global db
+
+    if not db.is_connected():
+        db.reconnect(attempts=3, delay=2)
+
+    return db
 
 @app.route("/")
 def home():
@@ -35,7 +40,8 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    cursor = db.cursor(dictionary=True)
+    db_conn = get_db()
+    cursor = db_conn.cursor(dictionary=True)
 
     cursor.execute("""
         SELECT * FROM users
@@ -44,6 +50,7 @@ def login():
     """, (email,))
 
     user = cursor.fetchone()
+    cursor.close()
 
     if user and bcrypt.checkpw(
         password.encode("utf-8"),
@@ -52,7 +59,7 @@ def login():
         return jsonify({
             "message": "Login successful",
             "user_id": user["id"],
-            "role": user["role"]   # IMPORTANT
+            "role": user["role"]
         })
 
     return jsonify({
@@ -78,31 +85,42 @@ def register():
     if genre not in allowed_genres:
         return jsonify({"message": "Invalid genre"}), 400
 
-    # 📸 Gestion image
+    # Gestion image
     photo_path = None
-    if file:
-        """ filename = file.filename
-        file.save("uploads/" + filename) """
-        
 
+    if file:
         filename = str(uuid.uuid4()) + "_" + file.filename
         file.save("uploads/" + filename)
         photo_path = "uploads/" + filename
 
-    # 🔐 Hash password
-    hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    # Hash password
+    hashed = bcrypt.hashpw(
+        password.encode("utf-8"),
+        bcrypt.gensalt()
+    )
 
-    cursor = db.cursor()
+    db_conn = get_db()
+    cursor = db_conn.cursor()
 
     query = """
     INSERT INTO users 
-    (email, password, first_name, last_name, phone, genre, adresse, photo, date_naissance)
+    (
+        email,
+        password,
+        first_name,
+        last_name,
+        phone,
+        genre,
+        adresse,
+        photo,
+        date_naissance
+    )
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     cursor.execute(query, (
         email,
-        hashed.decode('utf-8'),
+        hashed.decode("utf-8"),
         first_name,
         last_name,
         phone,
@@ -112,115 +130,222 @@ def register():
         date_naissance
     ))
 
-    db.commit()
+    db_conn.commit()
+    cursor.close()
 
-    return jsonify({"message": "User registered successfully"})
-
+    return jsonify({
+        "message": "User registered successfully"
+    })
 
 
 @app.route("/user/<int:user_id>", methods=["GET"])
 def get_user(user_id):
-    cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
+    db_conn = get_db()
+    cursor = db_conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT * FROM users
+        WHERE id=%s
+    """, (user_id,))
+
     user = cursor.fetchone()
+    cursor.close()
 
     if user:
         return jsonify(user)
-    else:
-        return jsonify({"message": "User not found"}), 404
-    
+
+    return jsonify({
+        "message": "User not found"
+    }), 404
+
+
+
 
 from flask import send_from_directory
 
+# ==================== UPLOAD IMAGE ====================
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
 
-
-
-# Configuration Mail (à mettre après app = Flask(__name__))
+# ==================== CONFIG MAIL ====================
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'noblette.tsimihanta@gmail.com'          # Ton email
-app.config['MAIL_PASSWORD'] = 'knex wyzt tlor zmwk' # ← Très important
+app.config['MAIL_USERNAME'] = 'noblette.tsimihanta@gmail.com'
+app.config['MAIL_PASSWORD'] = 'knex wyzt tlor zmwk'
 app.config['MAIL_DEFAULT_SENDER'] = 'noblette.tsimihanta@gmail.com'
 
 mail = Mail(app)
 
-# Stockage temporaire des OTP (en mémoire)
-otp_storage = {}   # {email: {"code": "123456", "expiry": datetime}}
 
-# ==================== ROUTE MOT DE PASSE OUBLIÉ ====================
-# ==================== CONFIG EMAIL (déjà fait) ====================
-# otp_storage = {}  # déjà déclaré plus haut
+# ==================== STOCKAGE OTP ====================
+otp_storage = {}
+# format:
+# {
+#   "email@gmail.com": {
+#       "code": "123456",
+#       "expiry": datetime
+#   }
+# }
 
+
+# ==================== MOT DE PASSE OUBLIÉ ====================
 @app.route("/forgot-password", methods=["POST"])
 def forgot_password():
-    data = request.json
-    email = data.get("email")
-
-    if not email:
-        return jsonify({"message": "Email requis"}), 400
-
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
-    if not cursor.fetchone():
-        return jsonify({"message": "Si cet email existe, un code vous a été envoyé."})
-
-    code = str(random.randint(100000, 999999))
-    expiry = datetime.now() + timedelta(minutes=10)
-
-    otp_storage[email] = {"code": code, "expiry": expiry}
-
     try:
-        msg = Message(
-            subject="Code de vérification",
-            recipients=[email],
-            body=f"""
-            Bonjour,
+        db.ping(reconnect=True)
 
-            Votre code de vérification est : {code}
+        data = request.json
+        email = data.get("email")
 
-            Ce code expire dans 10 minutes.
-            """
-        )
-        mail.send(msg)
-        return jsonify({"message": "Un code a été envoyé à votre email."})
-    except:
-        return jsonify({"message": "Erreur lors de l'envoi du code"}), 500
+        if not email:
+            return jsonify({
+                "message": "Email requis"
+            }), 400
+
+        cursor = db.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT id
+            FROM users
+            WHERE email = %s
+            AND is_deleted = 0
+        """, (email,))
+
+        user = cursor.fetchone()
+
+        cursor.close()
+
+        # sécurité : ne pas révéler si email existe
+        if not user:
+            return jsonify({
+                "message": "Si cet email existe, un code vous a été envoyé."
+            })
+
+        # génération OTP
+        code = str(random.randint(100000, 999999))
+        expiry = datetime.now() + timedelta(minutes=10)
+
+        otp_storage[email] = {
+            "code": code,
+            "expiry": expiry
+        }
+
+        try:
+            msg = Message(
+                subject="Code de vérification",
+                recipients=[email],
+                body=f"""
+Bonjour,
+
+Votre code de vérification est : {code}
+
+Ce code expire dans 10 minutes.
+
+Animal Game Team
+"""
+            )
+
+            mail.send(msg)
+
+            return jsonify({
+                "message": "Un code a été envoyé à votre email."
+            })
+
+        except Exception as e:
+            print("Erreur email :", e)
+
+            return jsonify({
+                "message": "Erreur lors de l'envoi du code"
+            }), 500
+
+    except Exception as e:
+        print("Erreur forgot-password :", e)
+
+        return jsonify({
+            "message": "Erreur serveur"
+        }), 500
 
 
+# ==================== VERIFICATION OTP ====================
 @app.route("/verify-otp", methods=["POST"])
 def verify_otp():
-    data = request.json
-    email = data.get("email")
-    code = data.get("code")
+    try:
+        db.ping(reconnect=True)
 
-    if not email or not code:
-        return jsonify({"message": "Données manquantes"}), 400
+        data = request.json
 
-    if email not in otp_storage:
-        return jsonify({"message": "Code invalide ou expiré"}), 400
+        email = data.get("email")
+        code = data.get("code")
 
-    stored = otp_storage[email]
-    if datetime.now() > stored["expiry"] or stored["code"] != code:
+        if not email or not code:
+            return jsonify({
+                "message": "Données manquantes"
+            }), 400
+
+        # email absent
+        if email not in otp_storage:
+            return jsonify({
+                "message": "Code invalide ou expiré"
+            }), 400
+
+        stored = otp_storage[email]
+
+        # OTP expiré ou faux
+        if (
+            datetime.now() > stored["expiry"]
+            or stored["code"] != code
+        ):
+            del otp_storage[email]
+
+            return jsonify({
+                "message": "Code invalide ou expiré"
+            }), 400
+
+        cursor = db.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                id,
+                first_name,
+                last_name,
+                role
+            FROM users
+            WHERE email = %s
+            AND is_deleted = 0
+        """, (email,))
+
+        user = cursor.fetchone()
+
+        cursor.close()
+
+        # suppression OTP
         del otp_storage[email]
-        return jsonify({"message": "Code invalide ou expiré"}), 400
 
-    # Code correct → Connexion
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT id, first_name, last_name FROM users WHERE email = %s", (email,))
-    user = cursor.fetchone()
+        if not user:
+            return jsonify({
+                "message": "Utilisateur introuvable"
+            }), 404
 
-    del otp_storage[email]  # Nettoyage
+        return jsonify({
+            "message": "Connexion réussie",
+            "user_id": user["id"],
+            "role": user["role"],
+            "first_name": user["first_name"],
+            "last_name": user["last_name"]
+        })
 
-    return jsonify({
-        "message": "Connexion réussie",
-        "user_id": user["id"]
-    })
+    except Exception as e:
+        print("Erreur verify-otp :", e)
 
+        return jsonify({
+            "message": "Erreur serveur"
+        }), 500
+
+
+# ==================== RUN APP ====================
 if __name__ == "__main__":
     app.run(debug=True)
