@@ -223,12 +223,13 @@ def register():
     # =========================
     # IMAGE
     # =========================
-    photo_path = None
+    photo_path = "uploads/default.png"
 
     if file:
         filename = str(uuid.uuid4()) + "_" + file.filename
         file.save("uploads/" + filename)
         photo_path = "uploads/" + filename
+    
 
     # =========================
     # PASSWORD HASH
@@ -481,5 +482,6 @@ def verify_otp():
 # =========================
 
 if __name__ == "__main__":
+    create_users_table()
     create_default_admin()
     app.run(debug=True)
