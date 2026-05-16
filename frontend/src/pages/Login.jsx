@@ -20,7 +20,6 @@ function Login() {
     });
 
     const data = await response.json();
-    console.log(data);
     if (response.ok) {
       localStorage.setItem("user_id", data.user_id);
       localStorage.setItem("role", data.role);
