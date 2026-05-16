@@ -139,7 +139,7 @@ def create_default_admin():
             "0349954043",
             "female",
             "Isada Fianarantsoa",
-            "uploads/default.png",
+            "default.jpeg",
             "2004-05-31",
             "admin"
         ))
@@ -223,7 +223,7 @@ def register():
     # =========================
     # IMAGE
     # =========================
-    photo_path = "uploads/default.png"
+    photo_path = "default.jpeg" 
 
     if file:
         filename = str(uuid.uuid4()) + "_" + file.filename

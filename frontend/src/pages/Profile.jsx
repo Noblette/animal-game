@@ -62,13 +62,18 @@ function Profile() {
           
           {/* En-tête plus grand */}
           <div className="p-8 lg:p-12 flex flex-col lg:flex-row items-center gap-8 bg-gradient-to-r from-indigo-50 to-purple-50">
-            <div className="relative">
+            {/* <div className="relative">
               <img
                 src={`http://127.0.0.1:5000/${user.photo}`}
                 alt="profil"
                 className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-4 border-white shadow-lg"
               />
-            </div>
+            </div> */}
+            <img
+                src={`http://127.0.0.1:5000/uploads/${user.photo}`}
+                alt="profil"
+                className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover border-4 border-white shadow-lg"
+              />
 
             <div className="flex-1 text-center lg:text-left">
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
