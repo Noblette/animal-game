@@ -133,6 +133,16 @@ function Profile() {
                   </button>
                 )
               }
+              {
+                role === "user" && (
+                  <button
+                    onClick={() => window.location.href="/user"}
+                    className="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700"
+                  >
+                    Dashboard User
+                  </button>
+                )
+              }
 
             </div>
           </div>

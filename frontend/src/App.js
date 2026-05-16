@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import Admin from "./pages/Admin";
+import User from "./pages/User";
 
 
 // 🔐 Route protégée utilisateur connecté
@@ -45,6 +46,15 @@ function App() {
           element={
             <PrivateRoute>
               <Profile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/user"
+          element={
+            <PrivateRoute>
+              <User />
             </PrivateRoute>
           }
         />
