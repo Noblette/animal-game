@@ -223,12 +223,15 @@ def register():
     # =========================
     # IMAGE
     # =========================
-    photo_path = "default.jpeg" 
+    photo_path = "default.jpeg"
 
-    if file:
+    if file and file.filename != "":
         filename = str(uuid.uuid4()) + "_" + file.filename
+
         file.save("uploads/" + filename)
-        photo_path = "uploads/" + filename
+
+    # on stocke seulement le nom
+    photo_path = filename
     
 
     # =========================
